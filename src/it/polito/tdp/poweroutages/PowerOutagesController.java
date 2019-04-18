@@ -39,7 +39,33 @@ public class PowerOutagesController {
 
     @FXML
     void doCalcola(ActionEvent event) {
-
+    	txtResult.clear();
+    	
+    	try {
+    		Nerc selezionato= cmbNerc.getSelectionModel().getSelectedItem();
+    		if(selezionato==null) {
+    			txtResult.appendText("Errore: selezionare un Nerc valido");
+    		}
+    		int y=(Integer.parseInt(txtYears.getText()));
+    		int anni= model.getAnniList().size();
+    		if(y<=0 ||y>anni) {
+    			txtResult.appendText("Errore: selezionare un anno tra 1 e "+anni+" ");
+    		}
+    		
+    		int h=(Integer.parseInt(txtHours.getText()));
+    		if(h<=0) {
+    			txtResult.appendText("Errore: selezionare un numero di ore >0");
+    		}
+    		
+    		
+    		
+    		
+    		
+    		
+    	}catch(NumberFormatException e) {
+    		txtResult.appendText("Errore: inserire un formato numerico valido");
+    	}
+    	
     }
 
     @FXML
