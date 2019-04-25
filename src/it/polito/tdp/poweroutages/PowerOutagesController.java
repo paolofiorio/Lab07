@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import it.polito.tdp.poweroutages.model.Model;
 import it.polito.tdp.poweroutages.model.Nerc;
+import it.polito.tdp.poweroutages.model.PowerOutage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -39,6 +40,7 @@ public class PowerOutagesController {
 
     @FXML
     void doCalcola(ActionEvent event) {
+    	
     	txtResult.clear();
     	
     	try {
@@ -56,9 +58,19 @@ public class PowerOutagesController {
     		if(h<=0) {
     			txtResult.appendText("Errore: selezionare un numero di ore >0");
     		}
-    		
-    		
-    		
+    		txtResult.setText(
+					String.format("Analizzo il caso peggiore... per %d ore e %d anni :\n", h, y));
+			List<PowerOutage> peggiore = model.casoPeggiore(y, h, selezionato);
+
+		
+			txtResult.appendText("Tot persone colpite: " + model.sommaAffectedPeople(peggiore) + "\n");
+			txtResult.appendText("Tot ore: " + model.sommaOutageOre(peggiore) + "\n");
+
+			for (PowerOutage ee : peggiore) {
+				txtResult.appendText(String.format("%d %s %s %d %d", ee.getAnno(), ee.getOutageInizio(),
+						ee.getOutageFine(), ee.getOutageDurata(), ee.getAffectedPeople()));
+				txtResult.appendText("\n");
+				}
     		
     		
     		

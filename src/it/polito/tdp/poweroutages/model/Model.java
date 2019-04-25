@@ -14,6 +14,10 @@ public class Model {
 	private NercIdMap nercIdMap;
 	private List<Nerc> nercList;
 	private List<PowerOutage> eventiList; 
+	private List<PowerOutage> filtro;
+	private List<PowerOutage> soluzione;
+	
+	private int maxPersone;
 	
 	
 	public Model() {
@@ -44,5 +48,94 @@ public class Model {
 			
 		});
 		return anniList;
-}
+	}
+	public int sommaAffectedPeople(List<PowerOutage> p) {
+		int somma=0;
+		for(PowerOutage e:p) {
+			somma+= e.getAffectedPeople();
+		}
+		return somma;
+		
+	}
+	public int sommaOutageOre(List<PowerOutage> p) {
+		int somma=0;
+		for(PowerOutage e: p) {
+			somma+=e.getOutageDurata();
+		}
+		return somma;
+	}
+	
+	private boolean controlloAnni(List<PowerOutage> p, int max) {
+		if(p.size()>=2) {
+			int x= p.get(0).getAnno();
+			int y=p.get(p.size()-1).getAnno();
+			if((y-x+1)>max)
+				//ho sforato
+				return false;
+		}
+		return true;
+		
+	}
+	
+	private boolean controlloOre(List<PowerOutage> p, int max) {
+		int somma=sommaOutageOre(p);
+		if(somma>max) {
+			//ho sforato
+			return false;
+			}
+		return true;
+	}
+	public List<PowerOutage> casoPeggiore(int maxAnni, int maxOre, Nerc n){
+		
+		soluzione= new ArrayList<>();
+		filtro= new ArrayList<>();
+		maxPersone=0;
+		
+		for(PowerOutage e: eventiList) {
+			//se contiene il nerc
+			if(e.getNerc().equals(n))
+				//aggiungo alla lista filtrata
+				filtro.add(e);
+		}
+		//ordino la lista per tempi di inizio
+		filtro.sort(new Comparator<PowerOutage>()
+		{
+			public int compare(PowerOutage p1, PowerOutage p2) {
+				return p1.getOutageInizio().compareTo(p2.getOutageInizio());
+			}
+		});
+			
+		
+		
+		ricorsione(new ArrayList<PowerOutage>() , maxAnni,maxOre);
+		
+
+		
+		return soluzione;
+	}
+
+	private void ricorsione(List<PowerOutage> p, int maxAnni, int maxOre) {
+		// TODO Auto-generated method stub
+		if(sommaAffectedPeople(p)>maxPersone) {
+			//aggiorno il max delle persone
+			maxPersone=sommaAffectedPeople(p);
+			soluzione= new ArrayList<PowerOutage>(p);
+		}
+		
+		for(PowerOutage e:filtro) {
+			if(!p.contains(e)) {
+				p.add(e);
+				
+				if(controlloAnni(p,maxAnni) && controlloOre(p,maxOre))
+					ricorsione(p,maxAnni-1,maxOre-1);
+			}
+			p.remove(e);
+		}
+		
+		
+		
+			
+	}
+
+	
 }
